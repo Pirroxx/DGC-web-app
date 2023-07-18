@@ -1,0 +1,114 @@
+
+.fresh h1{ 
+  font-family: 'font21';
+  color: #e9a81b;
+  font-size: 55px;
+  text-align: center;
+  text-shadow: 0 2px 0 #4e4220, 
+  0 1px 0 #aaa,
+  0 3px 0 rgba(0,0,0,.1),
+  0 1px 0 rgba(0,0,0,.3),
+  0 1px 1px rgba(0,0,0,.2),
+  0 1px 1px rgba(0,0,0,.25),
+  0 1px 1px rgba(0,0,0,.2),
+  0 1px 1px rgba(0,0,0,.15);
+}
+
+.animated {
+  transition: opacity 4.1s;
+}
+
+.animated.active {
+  opacity: 1;
+}
+
+.animated:not(.active) {
+  opacity: 0;
+  position: absolute;
+}
+
+.container {
+    height: 100%;
+    position: absolute;
+  }
+  
+  .animated {
+    position: sticky;
+    top: 0;
+  
+  }
+  
+  .fresh{
+    position: relative;
+  }
+  
+  .animated {
+    width: 100%;
+    display: none;
+  }
+  
+  .animated.active {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .loading-progress {
+    height: 100%;
+    background-color: #0af;
+    position: absolute;
+    animation: loadingAnimation 2s infinite;
+  }
+
+
+.loading-bar {
+  width: 100%;
+  height: 20px;
+  /* background-color: #eee; */
+}
+
+.loading-bar .loading-progress {
+  height: 100%;
+  background-color: #007bff;
+  transition: width 0.3s;
+}
+
+@keyframes loadingAnimation {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .container {
+    height: 100vh;
+  }
+  
+  .animated {
+    position: fixed;
+    top: auto;
+    height: 100%;
+  }
+  
+
+  
+  .card {
+    position: static;
+    top: auto;
+    padding-left: 0;
+    padding-top: 0;
+    width: auto;
+    height: auto;
+  }
+  
+  .fre {
+    position: static;
+    top: auto;
+    left: auto;
+    padding-top: 0;
+    width: auto;
+    height: auto;
+  }
+}
