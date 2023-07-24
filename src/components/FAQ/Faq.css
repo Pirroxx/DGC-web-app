@@ -3,7 +3,7 @@
     margin: 0;
     background: black;
     overflow-x: hidden;
-    height: 120vh;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;

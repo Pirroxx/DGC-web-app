@@ -8,8 +8,8 @@ html {
   display: flex;
   flex-direction: column;
   background-color: black;
+  scroll-behavior: smooth;
 }
-
 
 ::-webkit-scrollbar {
   width: 14px;

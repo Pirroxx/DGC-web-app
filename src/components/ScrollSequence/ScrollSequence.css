@@ -16,6 +16,7 @@
 
 .animated {
   transition: opacity 4.1s;
+  object-fit: cover;
 }
 
 .animated.active {
@@ -112,3 +113,14 @@
     height: auto;
   }
 }
+
+/* @media (min-width: 1200px) {
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .fresh h1 {
+    font-size: 80px;
+  }
+} */
