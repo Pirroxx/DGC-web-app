@@ -24,7 +24,7 @@ const ScrollSequence = () => {
     if (isMobileDevice()) {
       return `https://rurdimntxnyqvbtlagsj.supabase.co/storage/v1/object/public/phone-photos/Comp_${imageIndex}.webp`;
     } else {
-      return `https://rurdimntxnyqvbtlagsj.supabase.co/storage/v1/object/public/phone/Website_${imageIndex}.webp`;
+      return `https://rurdimntxnyqvbtlagsj.supabase.co/storage/v1/object/public/phone/Comp_${imageIndex}.webp`;
     }
   };
 
