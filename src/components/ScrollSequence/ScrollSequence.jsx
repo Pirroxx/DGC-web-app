@@ -109,11 +109,13 @@ const ScrollSequence = () => {
 
   return (
     <div className="fresh" style={{ height: `${38000}px` }}>
+
+         
       {isLoading ? (
         <LoadingBar style={{ width: `${loadingProgress}%` }} />
       ) : (
         <div className="container">
-          {/* <Header /> */}
+             <Header />
           {Array.from({ length: 2 }, (_, i) => {
             const imageIndex = currentImage + i;
             return (
