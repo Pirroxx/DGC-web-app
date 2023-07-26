@@ -54,12 +54,15 @@ const ScrollSequence = () => {
 
       const loadNextBatch = () => {
         const start = startImage + batchIndex * batchSize;
-        const end = Math.min(startImage + (batchIndex + 1) * batchSize, endImage + 1);
+        const end = Math.min(
+          startImage + (batchIndex + 1) * batchSize,
+          endImage + 1
+        );
 
         for (let i = start; i < end; i++) {
           const img = new Image();
           const imageIndex = i;
-          img.src = getImageSrc(imageIndex); 
+          img.src = getImageSrc(imageIndex);
           img.onload = onLoad;
         }
       };
@@ -109,13 +112,11 @@ const ScrollSequence = () => {
 
   return (
     <div className="fresh" style={{ height: `${38000}px` }}>
-
-         
       {isLoading ? (
         <LoadingBar style={{ width: `${loadingProgress}%` }} />
       ) : (
         <div className="container">
-             <Header />
+          <Header />
           {Array.from({ length: 2 }, (_, i) => {
             const imageIndex = currentImage + i;
             return (
@@ -129,8 +130,9 @@ const ScrollSequence = () => {
           })}
           {currentImage >= 10330 && currentImage <= 10560 && (
             <div className="border-container">
-              <div className={`border ${currentImage === 10560 ? "fade-in" : ""}`}>
-              </div>
+              <div
+                className={`border ${currentImage === 10560 ? "fade-in" : ""}`}
+              ></div>
               <a href="#utilities">Go to Utilities</a>
             </div>
           )}
