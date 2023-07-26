@@ -9,6 +9,7 @@ const ScrollSequence = () => {
   const pictureCount = endImage - startImage + 1;
   const scrollResolution = 23;
   const batchSize = 50;
+  const maxImageIndex = 11626; // Replace this with the actual maximum index for your images
 
   const [currentImage, setCurrentImage] = useState(startImage);
   const [isLoading, setIsLoading] = useState(true);
@@ -77,27 +78,36 @@ const ScrollSequence = () => {
     document.body.style.overflow = isLoading ? "hidden" : "auto";
   }, [isLoading]);
 
+  const updateImage = () => {
+    const imageIndex = Math.floor(window.scrollY / scrollResolution);
+
+    if (imageIndex + startImage <= maxImageIndex) {
+      setEndImage(startImage + imageIndex + 100);
+      setCurrentImage(startImage + imageIndex);
+      isScrolling.current = false;
+    }
+
+    // If scrolling up and at the beginning of the sequence, reset to initial values
+    if (imageIndex + startImage === startImage && startImage !== 10000) {
+      setEndImage(11626);
+      setCurrentImage(10000);
+      isScrolling.current = false;
+    }
+  };
+
+  const handleScroll = () => {
+    if (endImage < 11627) {
+      if (!isScrolling.current) {
+        isScrolling.current = true;
+        requestAnimationFrame(() => {
+          updateImage();
+          isScrolling.current = false;
+        });
+      }
+    }
+  };
+
   useEffect(() => {
-    const updateImage = () => {
-      const imageIndex = Math.floor(window.scrollY / scrollResolution);
-
-      if (endImage < 11627) {
-        console.log("first");
-        setEndImage(startImage + imageIndex + 100);
-        setCurrentImage(startImage + imageIndex);
-        isScrolling.current = false;
-      }
-    };
-
-    const handleScroll = () => {
-      if (endImage < 11627) {
-        if (!isScrolling.current) {
-          isScrolling.current = true;
-          requestAnimationFrame(updateImage);
-        }
-      }
-    };
-
     if (endImage < 11627) {
       window.addEventListener("scroll", handleScroll, { passive: true });
       return () => {
