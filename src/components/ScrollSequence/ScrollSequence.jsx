@@ -5,15 +5,20 @@ import Header from "../Header/Header";
 
 const ScrollSequence = () => {
   const startImage = 10000;
-  const [endImage, setEndImage] = useState(11626);
+  const firstBatchSize = 600;
+  const totalBatchSize = 1200;
+  const finalBatchSize = 400;
+  const maxImageIndex = 11626 + finalBatchSize;
+
+  const [endImage, setEndImage] = useState(startImage + totalBatchSize - 1);
   const pictureCount = endImage - startImage + 1;
   const scrollResolution = 23;
-  const batchSize = 50;
-  const maxImageIndex = 11626; // Replace this with the actual maximum index for your images
 
   const [currentImage, setCurrentImage] = useState(startImage);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [showScrollMessage, setShowScrollMessage] = useState(false);
+  const [showHiddenLoader, setShowHiddenLoader] = useState(false); // New state
 
   const isScrolling = useRef(false);
 
@@ -30,33 +35,72 @@ const ScrollSequence = () => {
   };
 
   useEffect(() => {
-    const preloadImages = async () => {
+    const preloadFirstBatch = async () => {
       let loadedImagesCount = 0;
       let lastUpdateTime = Date.now();
       const n = 25;
       const x = 300;
-      let batchIndex = 0;
 
       const onLoad = () => {
         loadedImagesCount++;
+        console.log(`Loaded image ${loadedImagesCount} of ${totalBatchSize}`);
         if (loadedImagesCount % n === 0 || Date.now() - lastUpdateTime > x) {
-          const progress = (loadedImagesCount / pictureCount) * 1000;
+          const progress = (loadedImagesCount / totalBatchSize) * 1000;
           setLoadingProgress(progress);
           lastUpdateTime = Date.now();
         }
 
-        if (loadedImagesCount === pictureCount) {
+        if (loadedImagesCount === firstBatchSize) {
+          setShowScrollMessage(true);
           setIsLoading(false);
-        } else if (loadedImagesCount === (batchIndex + 1) * batchSize) {
-          batchIndex++;
-          loadNextBatch();
+        }
+
+        if (loadedImagesCount === totalBatchSize) {
+          setIsLoading(false);
+          setShowScrollMessage(false);
+          setShowHiddenLoader(true); // Start the hidden loader
+        }
+      };
+
+      for (let i = startImage; i < startImage + firstBatchSize; i++) {
+        const img = new Image();
+        const imageIndex = i;
+        img.src = getImageSrc(imageIndex);
+        img.onload = onLoad;
+      }
+    };
+
+    preloadFirstBatch();
+  }, []);
+
+  useEffect(() => {
+    const preloadRestOfImages = async () => {
+      let loadedImagesCount = firstBatchSize;
+      const n = 25;
+      const x = 300;
+      let batchIndex = 1;
+      let lastUpdateTime = Date.now();
+
+      const onLoad = () => {
+        loadedImagesCount++;
+        console.log(`Loaded image ${loadedImagesCount} of ${totalBatchSize}`);
+        if (loadedImagesCount % n === 0 || Date.now() - lastUpdateTime > x) {
+          const progress = (loadedImagesCount / totalBatchSize) * 1000;
+          setLoadingProgress(progress);
+          lastUpdateTime = Date.now();
+        }
+
+        if (loadedImagesCount === totalBatchSize) {
+          setIsLoading(false);
+          setShowScrollMessage(false);
+          setShowHiddenLoader(true); // Start the hidden loader
         }
       };
 
       const loadNextBatch = () => {
-        const start = startImage + batchIndex * batchSize;
+        const start = startImage + batchIndex * firstBatchSize;
         const end = Math.min(
-          startImage + (batchIndex + 1) * batchSize,
+          startImage + (batchIndex + 1) * firstBatchSize,
           endImage + 1
         );
 
@@ -71,8 +115,54 @@ const ScrollSequence = () => {
       loadNextBatch();
     };
 
-    preloadImages();
-  }, []);
+    if (showScrollMessage) {
+      preloadRestOfImages();
+    }
+  }, [showScrollMessage]);
+
+  useEffect(() => {
+    const preloadHiddenImages = async () => {
+      const hiddenLoaderStartImage = startImage + totalBatchSize;
+      let loadedHiddenImagesCount = 0;
+      const n = 25;
+      const x = 300;
+      let lastUpdateTime = Date.now();
+
+      const onLoadHidden = () => {
+        loadedHiddenImagesCount++;
+        console.log(
+          `Loaded hidden image ${loadedHiddenImagesCount} of ${finalBatchSize}`
+        );
+        if (
+          loadedHiddenImagesCount % n === 0 ||
+          Date.now() - lastUpdateTime > x
+        ) {
+          const progress = (loadedHiddenImagesCount / finalBatchSize) * 1000;
+          setLoadingProgress(progress);
+          lastUpdateTime = Date.now();
+        }
+
+        if (loadedHiddenImagesCount === finalBatchSize) {
+          setIsLoading(false);
+        }
+      };
+
+      for (
+        let i = hiddenLoaderStartImage;
+        i < hiddenLoaderStartImage + finalBatchSize;
+        i++
+      ) {
+        const img = new Image();
+        const imageIndex = i;
+        img.src = getImageSrc(imageIndex);
+        img.onload = onLoadHidden;
+      }
+    };
+
+    if (showHiddenLoader) {
+      preloadHiddenImages();
+    }
+  }, [showHiddenLoader]);
 
   useEffect(() => {
     document.body.style.overflow = isLoading ? "hidden" : "auto";
@@ -87,7 +177,6 @@ const ScrollSequence = () => {
       isScrolling.current = false;
     }
 
-    // If scrolling up and at the beginning of the sequence, reset to initial values
     if (imageIndex + startImage === startImage && startImage !== 10000) {
       setEndImage(11626);
       setCurrentImage(10000);
@@ -96,7 +185,7 @@ const ScrollSequence = () => {
   };
 
   const handleScroll = () => {
-    if (endImage < 11627) {
+    if (endImage < 11627 && !showScrollMessage) {
       if (!isScrolling.current) {
         isScrolling.current = true;
         requestAnimationFrame(() => {
@@ -116,14 +205,12 @@ const ScrollSequence = () => {
     }
   }, []);
 
-  const containerHeight = 24 * pictureCount;
-
-  console.log(containerHeight);
-
   return (
     <div className="fresh" style={{ height: `${38000}px` }}>
       {isLoading ? (
         <LoadingBar style={{ width: `${loadingProgress}%` }} />
+      ) : showScrollMessage ? (
+        <div className="scroll-message">SCROLL FOR A BETTER EXPERIENCE</div>
       ) : (
         <div className="container">
           <Header />
