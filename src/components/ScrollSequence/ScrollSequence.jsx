@@ -5,9 +5,9 @@ import Header from "../Header/Header";
 
 const ScrollSequence = () => {
   const startImage = 10000;
-  const firstBatchSize = 600;
-  const totalBatchSize = 1200;
-  const finalBatchSize = 400;
+  const firstBatchSize = 350; // Adjusted to 500 photos
+  const totalBatchSize = 700; // Adjusted to 1000 photos
+  const finalBatchSize = 926; // Adjusted to 626 photos
   const maxImageIndex = 11626 + finalBatchSize;
 
   const [endImage, setEndImage] = useState(startImage + totalBatchSize - 1);
