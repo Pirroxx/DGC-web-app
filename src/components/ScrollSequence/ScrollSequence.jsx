@@ -2,29 +2,39 @@ import React, { useEffect, useState, useRef } from "react";
 import "./ScrollSequence.css";
 import LoadingBar from "../LoadingBar/LoadingBar";
 import Header from "../Header/Header";
+import { throttle } from "lodash";
 
 const ScrollSequence = () => {
   const startImage = 10000;
-  const firstBatchSize = 300; // Adjusted to 500 photos
-  const totalBatchSize = 600; // Adjusted to 1000 photos
-  const finalBatchSize = 1026; // Adjusted to 626 photos
+  const firstBatchSize = 300;
+  const totalBatchSize = 600;
+  const finalBatchSize = 1026;
   const maxImageIndex = 11626 + finalBatchSize;
 
   const [endImage, setEndImage] = useState(startImage + totalBatchSize - 1);
-  const pictureCount = endImage - startImage + 1;
-  const scrollResolution = 23;
+  // const scrollResolution = 23;
 
   const [currentImage, setCurrentImage] = useState(startImage);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [showScrollMessage, setShowScrollMessage] = useState(false);
-  const [showHiddenLoader, setShowHiddenLoader] = useState(false); // New state
+  const [showHiddenLoader, setShowHiddenLoader] = useState(false);
 
   const isScrolling = useRef(false);
 
   const isMobileDevice = () => {
     return /Mobi|Android/i.test(navigator.userAgent);
   };
+
+  const scrollResolution = isMobileDevice() ? 11 : 23;
+
+  useEffect(() => {
+    const eventType = isMobileDevice() ? "touchmove" : "scroll";
+    window.addEventListener(eventType, handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener(eventType, handleScroll);
+    };
+  }, []);
 
   const getImageSrc = (imageIndex) => {
     if (isMobileDevice()) {
@@ -58,7 +68,7 @@ const ScrollSequence = () => {
         if (loadedImagesCount === totalBatchSize) {
           setIsLoading(false);
           setShowScrollMessage(false);
-          setShowHiddenLoader(true); // Start the hidden loader
+          setShowHiddenLoader(true);
         }
       };
 
@@ -93,7 +103,7 @@ const ScrollSequence = () => {
         if (loadedImagesCount === totalBatchSize) {
           setIsLoading(false);
           setShowScrollMessage(false);
-          setShowHiddenLoader(true); // Start the hidden loader
+          setShowHiddenLoader(true);
         }
       };
 
@@ -184,17 +194,20 @@ const ScrollSequence = () => {
     }
   };
 
-  const handleScroll = () => {
-    if (endImage < 11627 && !showScrollMessage) {
-      if (!isScrolling.current) {
-        isScrolling.current = true;
-        requestAnimationFrame(() => {
-          updateImage();
-          isScrolling.current = false;
-        });
+  const handleScroll = throttle(
+    () => {
+      if (endImage < 11627 && !showScrollMessage) {
+        if (!isScrolling.current) {
+          isScrolling.current = true;
+          requestAnimationFrame(() => {
+            updateImage();
+            isScrolling.current = false;
+          });
+        }
       }
-    }
-  };
+    },
+    isMobileDevice() ? 15 : 20
+  );
 
   useEffect(() => {
     if (endImage < 11627) {
@@ -206,7 +219,10 @@ const ScrollSequence = () => {
   }, []);
 
   return (
-    <div className="fresh" style={{ height: `${38000}px` }}>
+    <div
+      className="fresh"
+      style={{ height: isMobileDevice() ? "18200px" : "38000px" }}
+    >
       {isLoading ? (
         <LoadingBar style={{ width: `${loadingProgress}%` }} />
       ) : showScrollMessage ? (
