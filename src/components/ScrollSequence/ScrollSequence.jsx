@@ -10,17 +10,14 @@ const ScrollSequence = () => {
   const totalBatchSize = 600;
   const finalBatchSize = 1026;
   const maxImageIndex = 11626 + finalBatchSize;
+  const isScrolling = useRef(false);
 
   const [endImage, setEndImage] = useState(startImage + totalBatchSize - 1);
-  // const scrollResolution = 23;
-
   const [currentImage, setCurrentImage] = useState(startImage);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [showScrollMessage, setShowScrollMessage] = useState(false);
   const [showHiddenLoader, setShowHiddenLoader] = useState(false);
-
-  const isScrolling = useRef(false);
 
   const isMobileDevice = () => {
     return /Mobi|Android/i.test(navigator.userAgent);

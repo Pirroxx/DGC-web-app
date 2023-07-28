@@ -42,32 +42,30 @@
   display: flex;
   flex-direction: column;
 }
-
-.loading-progress {
-  height: 100%;
-  background-color: #0af;
-  position: absolute;
-  animation: loadingAnimation 2s infinite;
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 22rem;
+  height: 100vh;
+  background-color: #214257;
 }
 
 .loading-bar {
-  width: 100%;
-  height: 20px;
-  /* background-color: #eee; */
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 4px solid #ffffff;
+  border-top: 4px solid #214257;
+  animation: spin 2s linear infinite;
 }
 
-.loading-bar .loading-progress {
-  height: 100%;
-  background-color: #007bff;
-  transition: width 0.3s;
-}
-
-@keyframes loadingAnimation {
+@keyframes spin {
   0% {
-    width: 0%;
+    transform: rotate(0deg);
   }
   100% {
-    width: 100%;
+    transform: rotate(360deg);
   }
 }
 

@@ -1,15 +1,13 @@
-import React from 'react'
+import React from "react";
 
 const LoadingBar = () => {
   return (
-    <div>     
-  <div className="loading-bar">
-    <div
-      className="loading-progress"
-    ></div>
-  </div>
-  </div>
-  )
-}
+    <div className="loading-container">
+      <div className="loading-bar">
+        <div className="loading-progress"></div>
+      </div>
+    </div>
+  );
+};
 
-export default LoadingBar
+export default LoadingBar;
