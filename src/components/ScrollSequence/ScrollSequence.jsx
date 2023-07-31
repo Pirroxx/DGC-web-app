@@ -5,11 +5,16 @@ import Header from "../Header/Header";
 import { throttle } from "lodash";
 
 const ScrollSequence = () => {
+  const isMobileDevice = () => {
+    return /Mobi|Android/i.test(navigator.userAgent);
+  };
   const startImage = 10000;
   const firstBatchSize = 300;
   const totalBatchSize = 600;
-  const finalBatchSize = 1026;
-  const maxImageIndex = 11626 + finalBatchSize;
+  const finalBatchSize = isMobileDevice() ? 925 : 1026;
+  const maxImageIndex = isMobileDevice()
+    ? 11525 + finalBatchSize
+    : 11626 + finalBatchSize;
   const isScrolling = useRef(false);
 
   const [endImage, setEndImage] = useState(startImage + totalBatchSize - 1);
@@ -18,10 +23,6 @@ const ScrollSequence = () => {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [showScrollMessage, setShowScrollMessage] = useState(false);
   const [showHiddenLoader, setShowHiddenLoader] = useState(false);
-
-  const isMobileDevice = () => {
-    return /Mobi|Android/i.test(navigator.userAgent);
-  };
 
   const scrollResolution = isMobileDevice() ? 11 : 23;
 
@@ -52,7 +53,9 @@ const ScrollSequence = () => {
         loadedImagesCount++;
         console.log(`Loaded image ${loadedImagesCount} of ${totalBatchSize}`);
         if (loadedImagesCount % n === 0 || Date.now() - lastUpdateTime > x) {
-          const progress = (loadedImagesCount / totalBatchSize) * 1000;
+          const progress = isMobileDevice
+            ? (loadedImagesCount / totalBatchSize) * 900
+            : (loadedImagesCount / totalBatchSize) * 1000;
           setLoadingProgress(progress);
           lastUpdateTime = Date.now();
         }
@@ -92,7 +95,9 @@ const ScrollSequence = () => {
         loadedImagesCount++;
         console.log(`Loaded image ${loadedImagesCount} of ${totalBatchSize}`);
         if (loadedImagesCount % n === 0 || Date.now() - lastUpdateTime > x) {
-          const progress = (loadedImagesCount / totalBatchSize) * 1000;
+          const progress = isMobileDevice()
+            ? (loadedImagesCount / totalBatchSize) * 900
+            : (loadedImagesCount / totalBatchSize) * 1000;
           setLoadingProgress(progress);
           lastUpdateTime = Date.now();
         }
@@ -144,7 +149,9 @@ const ScrollSequence = () => {
           loadedHiddenImagesCount % n === 0 ||
           Date.now() - lastUpdateTime > x
         ) {
-          const progress = (loadedHiddenImagesCount / finalBatchSize) * 1000;
+          const progress = isMobileDevice()
+            ? (loadedHiddenImagesCount / totalBatchSize) * 900
+            : (loadedHiddenImagesCount / totalBatchSize) * 1000;
           setLoadingProgress(progress);
           lastUpdateTime = Date.now();
         }
@@ -185,7 +192,16 @@ const ScrollSequence = () => {
     }
 
     if (imageIndex + startImage === startImage && startImage !== 10000) {
-      setEndImage(11626);
+      setEndImage(isMobileDevice() ? 11528 : 11626);
+      setCurrentImage(10000);
+      isScrolling.current = false;
+    }
+    if (
+      isMobileDevice() &&
+      imageIndex + startImage === startImage &&
+      startImage !== 10000
+    ) {
+      setEndImage(isMobileDevice() ? 11525 : 11626);
       setCurrentImage(10000);
       isScrolling.current = false;
     }
@@ -194,6 +210,15 @@ const ScrollSequence = () => {
   const handleScroll = throttle(
     () => {
       if (endImage < 11627 && !showScrollMessage) {
+        if (!isScrolling.current) {
+          isScrolling.current = true;
+          requestAnimationFrame(() => {
+            updateImage();
+            isScrolling.current = false;
+          });
+        }
+      }
+      if (isMobileDevice && endImage < 11527 && !showScrollMessage) {
         if (!isScrolling.current) {
           isScrolling.current = true;
           requestAnimationFrame(() => {
@@ -213,12 +238,18 @@ const ScrollSequence = () => {
         window.removeEventListener("scroll", handleScroll);
       };
     }
+    if (isMobileDevice && endImage < 11627) {
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+      };
+    }
   }, []);
 
   return (
     <div
       className="fresh"
-      style={{ height: isMobileDevice() ? "18200px" : "38000px" }}
+      style={{ height: isMobileDevice() ? "18000px" : "38000px" }}
     >
       {isLoading ? (
         <LoadingBar style={{ width: `${loadingProgress}%` }} />

@@ -15,7 +15,7 @@ const Header = () => {
         className="header-container"
         style={{
           backgroundColor: showNavbar ? "black" : "transparent",
-          transition: "0.5s ease-in",
+          transition: "0.7s ease-in",
         }}
       >
         <div className="logo">DGC</div>
