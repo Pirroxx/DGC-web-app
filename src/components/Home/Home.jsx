@@ -1,12 +1,12 @@
 import React from "react";
 import ScrollSequence from "../ScrollSequence/ScrollSequence";
-import Faq from "../FAQ/Faq"
+import Faq from "../FAQ/Faq";
 
 const Home = () => {
   return (
-    <div>
+    <div style={{ height: "100lvh" }}>
       <ScrollSequence />
-      <Faq/>
+      <Faq />
     </div>
   );
 };

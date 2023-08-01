@@ -24,6 +24,7 @@
 
 .fresh {
   position: relative;
+  min-height: 100lvh !important;
 }
 
 .animated {
@@ -63,7 +64,7 @@
 
 @media (max-width: 767px) {
   .container {
-    /* height: 100vh; */
+    height: 100lvh;
   }
 
   .animated {

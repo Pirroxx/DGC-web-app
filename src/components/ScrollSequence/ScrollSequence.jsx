@@ -23,9 +23,9 @@ const ScrollSequence = () => {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [showScrollMessage, setShowScrollMessage] = useState(false);
   const [showHiddenLoader, setShowHiddenLoader] = useState(false);
-  const [windowHeight, setWindowHeight] = useState();
   const photoHeight = isMobileDevice() ? 10 : 23.6;
   const pictureCount = isMobileDevice() ? 1527 : 1627;
+  const [windowHeight, setWindowHeight] = useState();
 
   const scrollResolution = isMobileDevice() ? 9 : 23;
 
@@ -39,11 +39,15 @@ const ScrollSequence = () => {
     };
   }, []);
 
-  useLayoutEffect(() => {
-    if (!windowHeight) {
-      console.log(window.innerHeight);
-      setWindowHeight(window.innerHeight);
-    }
+  const handleWindowResize = () => {
+    setWindowHeight(window.innerHeight);
+  };
+  useEffect(() => {
+    window.addEventListener("resize", handleWindowResize);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
   }, []);
 
   const getImageSrc = (imageIndex) => {
@@ -247,6 +251,7 @@ const ScrollSequence = () => {
       className="fresh"
       style={{
         height: `${containerHeight}px`,
+        minHeight: windowHeight,
       }}
     >
       {isLoading ? (
@@ -264,7 +269,7 @@ const ScrollSequence = () => {
                 src={getImageSrc(imageIndex)}
                 className={`animated ${i === 0 ? "active" : ""}`}
                 alt="scrollsequence"
-                style={{ height: isMobileDevice() ? windowHeight : "auto" }}
+                style={{ height: isMobileDevice() ? "100lvh" : "auto" }}
               />
             );
           })}
