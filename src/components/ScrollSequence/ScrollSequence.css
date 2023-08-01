@@ -1,10 +1,3 @@
-/* @font-face {
-  font-family: "FontName";
-  src: url("fonts/FontFileName.woff2") format("woff2"),
-    url("fonts/FontFileName.woff") format("woff"),
-    url("fonts/FontFileName.ttf") format("truetype");
-} */
-
 .animated {
   transition: opacity 4.1s;
   object-fit: cover;
@@ -70,7 +63,7 @@
 
 @media (max-width: 767px) {
   .container {
-    height: 100vh;
+    /* height: 100vh; */
   }
 
   .animated {
@@ -78,15 +71,6 @@
     top: auto;
     height: 100%;
     object-fit: fill;
-  }
-
-  .card {
-    position: static;
-    top: auto;
-    padding-left: 0;
-    padding-top: 0;
-    width: auto;
-    height: auto;
   }
 
   .fre {
@@ -99,16 +83,6 @@
   }
 }
 
-/* @media (min-width: 1200px) {
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .fresh h1 {
-    font-size: 80px;
-  }
-} */
 .scroll-message {
   position: fixed;
   top: 50%;

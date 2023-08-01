@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import "./ScrollSequence.css";
 import LoadingBar from "../LoadingBar/LoadingBar";
 import Header from "../Header/Header";
@@ -23,20 +23,32 @@ const ScrollSequence = () => {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [showScrollMessage, setShowScrollMessage] = useState(false);
   const [showHiddenLoader, setShowHiddenLoader] = useState(false);
+  const [windowHeight, setWindowHeight] = useState();
+  const photoHeight = isMobileDevice() ? 10 : 23.6;
+  const pictureCount = isMobileDevice() ? 1527 : 1627;
 
-  const scrollResolution = isMobileDevice() ? 11 : 23;
+  const scrollResolution = isMobileDevice() ? 9 : 23;
+
+  // console.log(isMobileDevice());
 
   useEffect(() => {
     const eventType = isMobileDevice() ? "touchmove" : "scroll";
     window.addEventListener(eventType, handleScroll, { passive: true });
-    return () => {
+    return (windowHeight) => {
       window.removeEventListener(eventType, handleScroll);
     };
   }, []);
 
+  useLayoutEffect(() => {
+    if (!windowHeight) {
+      console.log(window.innerHeight);
+      setWindowHeight(window.innerHeight);
+    }
+  }, []);
+
   const getImageSrc = (imageIndex) => {
     if (isMobileDevice()) {
-      return `https://rurdimntxnyqvbtlagsj.supabase.co/storage/v1/object/public/phone-photos/Comp_${imageIndex}.webp`;
+      return `https://rurdimntxnyqvbtlagsj.supabase.co/storage/v1/object/public/mobile-photos/Comp_${imageIndex}.webp`;
     } else {
       return `https://rurdimntxnyqvbtlagsj.supabase.co/storage/v1/object/public/phone/Comp_${imageIndex}.webp`;
     }
@@ -192,7 +204,7 @@ const ScrollSequence = () => {
     }
 
     if (imageIndex + startImage === startImage && startImage !== 10000) {
-      setEndImage(isMobileDevice() ? 11528 : 11626);
+      setEndImage(11626);
       setCurrentImage(10000);
       isScrolling.current = false;
     }
@@ -201,7 +213,7 @@ const ScrollSequence = () => {
       imageIndex + startImage === startImage &&
       startImage !== 10000
     ) {
-      setEndImage(isMobileDevice() ? 11525 : 11626);
+      setEndImage(11525);
       setCurrentImage(10000);
       isScrolling.current = false;
     }
@@ -209,16 +221,7 @@ const ScrollSequence = () => {
 
   const handleScroll = throttle(
     () => {
-      if (endImage < 11627 && !showScrollMessage) {
-        if (!isScrolling.current) {
-          isScrolling.current = true;
-          requestAnimationFrame(() => {
-            updateImage();
-            isScrolling.current = false;
-          });
-        }
-      }
-      if (isMobileDevice && endImage < 11527 && !showScrollMessage) {
+      if (endImage < (isMobileDevice() ? 11527 : 11627) && !showScrollMessage) {
         if (!isScrolling.current) {
           isScrolling.current = true;
           requestAnimationFrame(() => {
@@ -230,26 +233,21 @@ const ScrollSequence = () => {
     },
     isMobileDevice() ? 15 : 20
   );
-
   useEffect(() => {
-    if (endImage < 11627) {
-      window.addEventListener("scroll", handleScroll, { passive: true });
-      return () => {
-        window.removeEventListener("scroll", handleScroll);
-      };
-    }
-    if (isMobileDevice && endImage < 11627) {
+    if (endImage < (isMobileDevice() ? 11527 : 11627)) {
       window.addEventListener("scroll", handleScroll, { passive: true });
       return () => {
         window.removeEventListener("scroll", handleScroll);
       };
     }
   }, []);
-
+  const containerHeight = photoHeight * pictureCount;
   return (
     <div
       className="fresh"
-      style={{ height: isMobileDevice() ? "18000px" : "38000px" }}
+      style={{
+        height: `${containerHeight}px`,
+      }}
     >
       {isLoading ? (
         <LoadingBar style={{ width: `${loadingProgress}%` }} />
@@ -266,6 +264,7 @@ const ScrollSequence = () => {
                 src={getImageSrc(imageIndex)}
                 className={`animated ${i === 0 ? "active" : ""}`}
                 alt="scrollsequence"
+                style={{ height: isMobileDevice() ? windowHeight : "auto" }}
               />
             );
           })}
